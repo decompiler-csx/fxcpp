@@ -11,7 +11,7 @@
 #   include <memory.h>
 #   include <errno.h>
 #   include <signal.h>
-#   if defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+#   if defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(__SNC__)
 #      include <sys/wait.h>
 #   elif !defined(NEKO_MAC)
 #      include <wait.h>
@@ -190,7 +190,7 @@ static String quoteString(String v)
 **/
 Dynamic _hx_std_process_run( String cmd, Array<String> vargs, int inShowParam )
 {
-   #if defined(APPLETV) || defined(HX_APPLEWATCH)
+   #if defined(APPLETV) || defined(HX_APPLEWATCH) || defined(__SNC__) // todo: implement this
    return null();
 
    #else
@@ -510,6 +510,10 @@ Dynamic _hx_std_process_exit( Dynamic handle, bool block )
 #else
 int _hx_std_process_exit( Dynamic handle )
 {
+   #if defined(__SNC__)
+      return 0;
+   #else
+
    vprocess *p = getProcess(handle);
 
    hx::EnterGCFreeZone();
@@ -537,6 +541,7 @@ int _hx_std_process_exit( Dynamic handle )
       return 0;
 
    return WEXITSTATUS(rval);
+   #endif
    #endif
 }
 #endif

@@ -1,0 +1,139 @@
+<xml>
+
+
+<compiler id="vitasdk-gcc" exe="${VITASDK}/bin/arm-vita-eabi-g++">
+
+  <exe name="${VITASDK}/bin/arm-vita-eabi-g++" />
+
+  <include name="toolchain/common-defines.xml" />
+  <flag value="-I${VITASDK}/include"/>
+  <flag value="-I${VITASDK}/arm-vita-eabi/include"/>
+  <flag value="-I${HXCPP}/include"/>
+  <flag value="-Iinclude"/>
+
+
+  <cppflag value="-std=c++11" if="HXCPP_CPP11"/>
+
+  <ext value=".obj"/>
+  <objdir value="obj/vita${OBJEXT}${ARCH}" />
+
+  <flag value="-fpermissive"/>
+  <flag value="-Wno-narrowing"/>
+  
+
+  <flag value="-L${VITASDK}/arm-vita-eabi/lib"/>
+  <flag value="-lpthread"/>
+  <flag value="-lstdc++"/>
+  <flag value="-lm"/>
+  <flag value="-ldl"/>
+  <flag value="-c"/>
+
+  <flag value="-D__SNC__"/>
+
+
+</compiler>
+
+<linker id="exe" exe="${VITASDK}/bin/arm-vita-eabi-g++" >
+  <exe name="${VITASDK}/bin/arm-vita-eabi-g++" />
+
+  <cppflag value="-std=c++11" if="HXCPP_CPP11"/>
+
+
+  <flag value="-L${VITASDK}/arm-vita-eabi/lib" />
+  <flag value="-L${VITASDK}/lib" />
+  <flag value="-Wl,-q"/>
+  <flag value="-lstdc++"/>
+  <flag value="-fpermissive"/>
+  <lib name="-lpthread"/>
+  <lib name="-ldl"/>
+	<lib name="-ltaihen_stub"/>
+	<lib name="-lSceKernelModulemgr_stub"/>
+	<lib name="-lSceKernelThreadMgr_stub"/>
+	<lib name="-lSceDisplay_stub"/>
+	<lib name="-lSceAppMgr_stub"/>
+	<lib name="-lSceSysmodule_stub"/>
+  <lib name="-lSDL2"/>
+	<lib name="-lc"/>
+	<lib name="-ljpeg"/>
+	<lib name="-lvorbis"/>
+	<lib name="-lvorbisfile"/>
+	<lib name="-logg"/>
+	<lib name="-lSceCtrl_stub"/>
+	<lib name="-lSceHid_stub"/>
+	<lib name="-lSceTouch_stub"/>
+	<lib name="-lSceAudio_stub"/>
+	<lib name="-lSceMotion_stub"/>
+	<lib name="-lSceGxm_stub"/>
+	<lib name="-lSceIme_stub"/>
+	<lib name="-lSceCommonDialog_stub"/>
+	<lib name="-lpng"/>
+	<lib name="-lz"/>
+	<lib name="-lpixman-1"/>
+
+
+  <ext value=".elf"/>
+  <outflag value="-o"/>
+  <prefix value=""/>
+
+</linker>
+
+<linker id="dll" exe="${VITASDK}/bin/arm-vita-eabi-g++" >
+
+  <ext value=""/>
+  <outflag value="-o"/>
+  <prefix value=""/>
+
+  <flag value="-frtti"/>
+  <flag value="-nostdlib"/>
+  <flag value="-std=c++11" if="HXCPP_CPP11"/>
+  <flag value="-Wl,--no-undefined" unless="dll_import" />
+  <flag value="-Wl,--unresolved-symbols=ignore-in-object-files" if="dll_import" />
+  <flag value="-Wl,-z,noexecstack"/>
+  <flag value="-L${VITASDK}/arm-eabi-vita/lib"/>
+  <flag value="-L${VITASDK}/lib"/>
+
+  <lib name="-lpthread"/>
+  <lib name="-ldl"/>
+	<lib name="-ltaihen_stub"/>
+	<lib name="-lSceKernelModulemgr_stub"/>
+	<lib name="-lSceKernelThreadMgr_stub"/>
+	<lib name="-lSceDisplay_stub"/>
+	<lib name="-lSceAppMgr_stub"/>
+	<lib name="-lSceSysmodule_stub"/>
+
+  <lib name="-ldl"/>
+</linker>
+
+<linker id="static_link" exe="${VITASDK}/bin/arm-vita-eabi-ar" unless="windows">
+  <ext value="${LIBEXT}"/>
+
+  <exe name="${EXEPREFIX}-ar" if="EXEPREFIX" />
+  <exe name="${HXCPP_AR}" if="HXCPP_AR" />
+
+
+  <fromfile value="" if="GCC_OLD" />
+  <fromfile value="" if="tizen" />
+  <fromfile value="" if="blackberry" />
+  <outflag value="-cr "/>
+  <outflag value="cr " if="emscripten" />
+  <section if="HXCPP_USE_LIBTOOL">
+     <exe name="libtool"  />
+     <exe name="${HXCPP_LIBTOOL}" if="HXCPP_LIBTOOL" />
+     <outflag value="-o "  />
+     <fromfile value="-filelist " needsQuotes="false" />
+  </section>
+  <!-- <outflag value="-o " if="emscripten" /> -->
+  <recreate value="1" unless="HXCPP_LIBTOOL" />
+
+  <expandAr value="1" if="android" />
+  <expandAr value="1" if="emscripten" />
+  <expandAr value="1" if="linux" />
+  <section unless="HXCPP_USE_LIBTOOL">
+     <ranlib name="ranlib" />
+     <ranlib name="${EXEPREFIX}-ranlib" if="EXEPREFIX" />
+     <ranlib name="${HXCPP_RANLIB}" if="HXCPP_RANLIB" />
+  </section>
+</linker>
+
+
+</xml>

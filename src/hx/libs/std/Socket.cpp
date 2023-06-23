@@ -1,4 +1,4 @@
-#if !defined(HX_WINRT) && !defined(EPPC)
+#if !defined(HX_WINRT) && !defined(EPPC) && !defined(__SNC__) // todo: socket support for vita
 #include <hxcpp.h>
 #include <hx/OS.h>
 
@@ -55,10 +55,11 @@ typedef int SocketLen;
 typedef socklen_t SocketLen;
 #endif
 
-#if (defined(NEKO_WINDOWS) || defined(NEKO_MAC)) && !defined(MSG_NOSIGNAL)
+#if (defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(__SNC__)) && !defined(MSG_NOSIGNAL)
 #   define MSG_NOSIGNAL 0
 #endif
 
+#   define MSG_NOSIGNAL 0
 
 
 namespace
@@ -543,6 +544,10 @@ String _hx_std_host_reverse_ipv6( Array<unsigned char> host )
 **/
 String _hx_std_host_local()
 {
+   #ifdef __SNC__
+      return String("Vita");
+   #endif
+   
    char buf[256];
    hx::EnterGCFreeZone();
    if( gethostname(buf,256) == SOCKET_ERROR )

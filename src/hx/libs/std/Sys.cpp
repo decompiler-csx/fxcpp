@@ -23,7 +23,9 @@
    #ifndef EPPC
       #include <unistd.h>
       #include <dirent.h>
+   #ifndef __SNC__
       #include <termios.h>
+   #endif
       #include <sys/time.h>
       #include <sys/times.h>
    #endif
@@ -96,7 +98,7 @@ String _hx_std_get_env( String v )
 **/
 void _hx_std_put_env( String e, String v )
 {
-#ifdef HX_WINRT
+#if defined(EPPC) || defined(__SNC__)
    // Do nothing
 #elif defined(NEKO_WINDOWS)
    String set = e + HX_CSTRING("=") + (v != null()?v:"");
@@ -153,7 +155,7 @@ void _hx_std_sys_sleep( double f )
 **/
 bool _hx_std_set_time_locale( String l )
 {
-#if defined(ANDROID) || defined(GCW0)
+#if defined(ANDROID) || defined(GCW0) || defined(__SNC__)
     return false;
 #else
 
@@ -270,6 +272,8 @@ String _hx_std_sys_string()
    return HX_CSTRING("Emscripten");
 #elif defined(EPPC)
    return HX_CSTRING("EPPC");
+#elif defined(__SNC__)
+    return HX_CSTRING("VITA");   
 #else
 #error Unknow system string
 #endif
@@ -296,7 +300,7 @@ bool _hx_std_sys_is64()
 **/
 int _hx_std_sys_command( String cmd )
 {
-   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH)
+   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH) || defined(__SNC__)
    return -1;
    #else
    if( !cmd.raw_ptr() || !cmd.length )
@@ -621,7 +625,7 @@ double _hx_std_sys_time()
     ui.LowPart = ft.dwLowDateTime;
     ui.HighPart = ft.dwHighDateTime;
    return ( ((double)ui.QuadPart) / 10000000.0 - EPOCH_DIFF );
-#elif defined(EPPC)
+#elif defined(EPPC) || defined(__SNC__)
    time_t tod;
    time(&tod);
    return ((double)tod);
@@ -789,6 +793,8 @@ String _hx_std_sys_exe_path()
    return String::create(path);
 #elif defined(EPPC)
    return HX_CSTRING("");
+#elif defined(__SNC__)
+    return HX_CSTRING("app0:eboot.bin");   
 #else
    {
       char path[PATH_MAX];
@@ -865,7 +871,7 @@ Array<String> _hx_std_sys_env()
 **/
 int _hx_std_sys_getch( bool b )
 {
-#if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC)
+#if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(__SNC__)
    return 0;
 #elif defined(NEKO_WINDOWS)
    hx::EnterGCFreeZone();
